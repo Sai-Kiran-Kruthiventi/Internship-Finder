@@ -10,22 +10,25 @@ connectDB();
 
 const app = express();
 
-// Security middleware
 app.use(helmet());
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://internship-finder-bice.vercel.app',
+    /\.vercel\.app$/
+  ],
   credentials: true
 }));
+
 app.use(express.json({ limit: '10mb' }));
 
-// Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
 });
 app.use('/api/', limiter);
 
-// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/internships', require('./routes/internships'));
 app.use('/api/profile', require('./routes/profile'));
